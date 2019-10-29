@@ -1,10 +1,10 @@
 package comsis.service.webCrawler;
 
 import comsis.core.model.PageInfo;
-import comsis.core.model.PaperPage;
+import comsis.core.model.PublicationPage;
 import comsis.core.serviceInterface.WebCrawler;
-import comsis.core.structure.SynchronizedQueue;
-import comsis.core.structure.SynchronizedSet;
+import comsis.common.structure.SynchronizedQueue;
+import comsis.common.structure.SynchronizedSet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.Set;
 public class CrawlerRunner implements WebCrawler {
     private SynchronizedQueue<PageInfo> urlProcessingQueue = new SynchronizedQueue();
     private SynchronizedSet<String> visitedUrls = new SynchronizedSet<>();
-    private SynchronizedSet<PaperPage> loadedPapers = new SynchronizedSet<>();
+    private SynchronizedSet<PublicationPage> loadedPublications = new SynchronizedSet<>();
 
     private ArrayList<CrawlerThread> workers = new ArrayList<>();
 
@@ -25,12 +25,12 @@ public class CrawlerRunner implements WebCrawler {
         visitedUrls.add(seedUrl);
 
         for(int i = 0; i < numberOfWorkers; i ++) {
-            CrawlerThread crawlerThread = new CrawlerThread(i, seedUrl, urlProcessingQueue, visitedUrls, loadedPapers);
+            CrawlerThread crawlerThread = new CrawlerThread(i, seedUrl, urlProcessingQueue, visitedUrls, loadedPublications);
             workers.add(crawlerThread);
         }
     }
 
-    public Set<PaperPage> searchForPapers() throws InterruptedException {
+    public Set<PublicationPage> searchForPublications() throws InterruptedException {
         for (int i = 0; i < workers.size(); i++) {
             workers.get(i).start();
         }
@@ -51,6 +51,6 @@ public class CrawlerRunner implements WebCrawler {
             crawlerThread.interrupt();
         }
 
-        return loadedPapers.asSet();
+        return loadedPublications.asSet();
     }
 }

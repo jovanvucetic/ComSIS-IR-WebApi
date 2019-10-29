@@ -1,4 +1,4 @@
-package comsis.core.structure;
+package comsis.common.structure;
 
 import java.util.LinkedList;
 

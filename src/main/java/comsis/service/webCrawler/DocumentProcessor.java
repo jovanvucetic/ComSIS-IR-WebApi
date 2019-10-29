@@ -1,29 +1,29 @@
 package comsis.service.webCrawler;
 
 import comsis.core.model.PageInfo;
-import comsis.core.model.PaperPage;
-import comsis.core.structure.SynchronizedQueue;
-import comsis.core.structure.SynchronizedSet;
+import comsis.core.model.PublicationPage;
+import comsis.common.structure.SynchronizedQueue;
+import comsis.common.structure.SynchronizedSet;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class DocumentProcessor {
-    private static final String PAPER_SELECTOR = "a[href*=archive.php?show=ppr]";
-    private static final String PAPER_AUTHOR_SELECTOR = "p.authors";
-    private static final String PAPER_TITLE_SELECTOR = "h1.title";
-    private static final String PAPER_ABSTRACT_SELECTOR = "h3:contains(Abstract)";
+    private static final String PUBLICATION_SELECTOR = "a[href*=archive.php?show=ppr]";
+    private static final String PUBLICATION_AUTHOR_SELECTOR = "p.authors";
+    private static final String PUBLICATION_TITLE_SELECTOR = "h1.title";
+    private static final String PUBLICATION_ABSTRACT_SELECTOR = "h3:contains(Abstract)";
     private static final String ISSUE_SELECTOR = "a[href*=archive.php?show=vol]";
 
 
     private SynchronizedQueue<PageInfo> urlQueue;
     private SynchronizedSet<String> visitedUrls;
-    private SynchronizedSet<PaperPage> loadedPapers;
+    private SynchronizedSet<PublicationPage> loadedPublications;
 
-    public DocumentProcessor(SynchronizedQueue urlQueue, SynchronizedSet visitedUrls, SynchronizedSet loadedPapers){
+    public DocumentProcessor(SynchronizedQueue urlQueue, SynchronizedSet visitedUrls, SynchronizedSet loadedPublications){
         this.urlQueue = urlQueue;
         this.visitedUrls = visitedUrls;
-        this.loadedPapers = loadedPapers;
+        this.loadedPublications = loadedPublications;
     }
 
     public void processDocument(Document document, int depth) {
@@ -31,10 +31,10 @@ public class DocumentProcessor {
             case 0:
                 loadIssue(document);
             case 1:
-                loadPapers(document);
+                loadPublications(document);
                 break;
             case 2:
-                extractPaperData(document);
+                extractPublicationData(document);
                 break;
             default:
                 throw new IllegalArgumentException("Depth of web crawler is invalid");
@@ -42,49 +42,49 @@ public class DocumentProcessor {
     }
 
     private void loadIssue(Document document) {
-        Elements paperLinks = document.select(ISSUE_SELECTOR);
-        boolean newPaperLoaded = false;
+        Elements publicationLinks = document.select(ISSUE_SELECTOR);
+        boolean newPublicationLoaded = false;
 
-        for(Element issueLink : paperLinks) {
+        for(Element issueLink : publicationLinks) {
             String linkUrl = issueLink.attr("abs:href");
             if(!visitedUrls.contains(linkUrl)) {
-                newPaperLoaded = true;
+                newPublicationLoaded = true;
                 visitedUrls.add(linkUrl);
                 urlQueue.add(new PageInfo(linkUrl, 1));
             }
         }
 
-        if(newPaperLoaded) {
+        if(newPublicationLoaded) {
             synchronized (urlQueue) {
                 urlQueue.notify();
             }
         }
     }
 
-    private void extractPaperData(Document document) {
-        String paperTitle = document.select(PAPER_TITLE_SELECTOR).text();
-        String paperAuthors = document.select(PAPER_AUTHOR_SELECTOR).html();
-        String institutions = document.select(PAPER_AUTHOR_SELECTOR).next().html();
-        String paperAbstract = document.select(PAPER_ABSTRACT_SELECTOR).next("p").text();
+    private void extractPublicationData(Document document) {
+        String publicationTitle = document.select(PUBLICATION_TITLE_SELECTOR).text();
+        String publicationAuthors = document.select(PUBLICATION_AUTHOR_SELECTOR).html();
+        String institutions = document.select(PUBLICATION_AUTHOR_SELECTOR).next().html();
+        String publicationAbstract = document.select(PUBLICATION_ABSTRACT_SELECTOR).next("p").text();
 
-        PaperPage paperPage = new PaperPage(paperTitle, paperAuthors, institutions, paperAbstract);
-        loadedPapers.add(paperPage);
+        PublicationPage publicationPage = new PublicationPage(publicationTitle, publicationAuthors, institutions, publicationAbstract);
+        loadedPublications.add(publicationPage);
     }
 
-    private void loadPapers(Document document) {
-        Elements paperLinks = document.select(PAPER_SELECTOR);
-        boolean newPaperLoaded = false;
+    private void loadPublications(Document document) {
+        Elements publicationLinks = document.select(PUBLICATION_SELECTOR);
+        boolean newPublicationLoaded = false;
 
-        for(Element paperLink : paperLinks) {
-            String linkUrl = paperLink.attr("abs:href");
+        for(Element publicationLink : publicationLinks) {
+            String linkUrl = publicationLink.attr("abs:href");
             if(!visitedUrls.contains(linkUrl)) {
-                newPaperLoaded = true;
+                newPublicationLoaded = true;
                 visitedUrls.add(linkUrl);
                 urlQueue.add(new PageInfo(linkUrl, 2));
             }
         }
 
-        if(newPaperLoaded) {
+        if(newPublicationLoaded) {
             synchronized (urlQueue) {
                 urlQueue.notify();
             }

@@ -20,9 +20,9 @@ public class ComsisIrWebApi {
 //    public void insertMockUser() {
 //        BufferedWriter writer = null;
 //        try {
-//            Set<PaperPage> paperPageSet = crawlerRunner.searchForPapers();
+//            Set<PublicationPage> paperPageSet = crawlerRunner.searchForPublications();
 //            writer = new BufferedWriter(new FileWriter("authors.txt"));
-//            Iterator<PaperPage> it = paperPageSet.iterator();
+//            Iterator<PublicationPage> it = paperPageSet.iterator();
 //
 //            while (it.hasNext()) {
 //                writer.write(it.next().formatForFileWriter());

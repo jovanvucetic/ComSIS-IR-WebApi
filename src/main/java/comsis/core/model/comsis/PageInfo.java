@@ -1,4 +1,4 @@
-package comsis.core.model;
+package comsis.core.model.comsis;
 
 public class PageInfo {
     protected String url;

@@ -7,7 +7,10 @@ import comsis.core.utils.DblpSearchPreferences;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DblpRequestUrlBuilder {
     private static final NotationFormat DEFAULT_NOTATION_FORMAT = NotationFormat.JSON;
@@ -21,12 +24,23 @@ public class DblpRequestUrlBuilder {
 
         StringBuilder searchQuery = new StringBuilder(QueryStrings.BASE_API_URL);
         searchQuery.append(getSearchEntity(preferences.getEntity()));
+        searchQuery.append(prepareSearchQuery(preferences.getSearchQuery(), preferences.getCompleteWordsOnly()));
         searchQuery.append(getSearchNotationFormat(preferences.getFormat()));
-        searchQuery.append(preferences.getSearchQuery());
         searchQuery.append(getSearchTopCount(preferences.getTopCount()));
         searchQuery.append(getNumberOfCompletions(preferences.getNumberOfCompletions()));
 
         return new URL(searchQuery.toString());
+    }
+
+    private static String prepareSearchQuery(String searchQuery, boolean completeWordsOnly) {
+        List<String> words = Arrays.stream(searchQuery.split(" "))
+                .map(word -> appendCompleteWordSign(word, completeWordsOnly)).collect(Collectors.toList());
+
+        return "q=" + String.join("%20", words);
+    }
+
+    private static String appendCompleteWordSign(String word, boolean completeWordsOnly) {
+        return completeWordsOnly ? word + "$" : word;
     }
 
     private static String getSearchNotationFormat(NotationFormat format) {
@@ -75,13 +89,13 @@ public class DblpRequestUrlBuilder {
 
 
     private static final class QueryStrings {
-        static final String BASE_API_URL = "http://dblp.org/search";
+        static final String BASE_API_URL = "https://dblp.org/search";
 
         static final String VENUE_ENTITY = "/venue/api?";
         static final String AUTHOR_ENTITY = "/author/api?";
         static final String PUBLICATION_ENTITY = "/publ/api?";
 
-        static final String JSON_FORMAT = "/format=json";
-        static final String XML_FORMAT = "/format=xml";
+        static final String JSON_FORMAT = "&format=json";
+        static final String XML_FORMAT = "&format=xml";
     }
 }

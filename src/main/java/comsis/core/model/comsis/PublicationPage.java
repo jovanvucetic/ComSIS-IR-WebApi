@@ -1,4 +1,4 @@
-package comsis.core.model;
+package comsis.core.model.comsis;
 
 public class PublicationPage {
     private static final String AUTHORS_PARSING_REGEX = "<sup>(\\d)*(,\\d)*(,\\s\\d)*</sup>(,)?(\\sand)?";

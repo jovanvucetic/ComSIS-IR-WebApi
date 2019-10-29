@@ -1,6 +1,6 @@
 package comsis.core.serviceInterface;
 
-import comsis.core.model.PublicationPage;
+import comsis.core.model.comsis.PublicationPage;
 
 import java.util.Set;
 

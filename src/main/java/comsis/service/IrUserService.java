@@ -1,4 +1,4 @@
-package comsis.service.users;
+package comsis.service;
 
 import comsis.core.model.User;
 import comsis.core.model.UserRole;

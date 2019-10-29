@@ -1,7 +1,7 @@
 package comsis.service.webCrawler;
 
-import comsis.core.model.PageInfo;
-import comsis.core.model.PublicationPage;
+import comsis.core.model.comsis.PageInfo;
+import comsis.core.model.comsis.PublicationPage;
 import comsis.core.serviceInterface.WebCrawler;
 import comsis.common.structure.SynchronizedQueue;
 import comsis.common.structure.SynchronizedSet;

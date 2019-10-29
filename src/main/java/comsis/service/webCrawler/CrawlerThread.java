@@ -1,6 +1,6 @@
 package comsis.service.webCrawler;
 
-import comsis.core.model.PageInfo;
+import comsis.core.model.comsis.PageInfo;
 import comsis.common.structure.SynchronizedQueue;
 import comsis.common.structure.SynchronizedSet;
 import org.jsoup.Jsoup;

@@ -11,15 +11,17 @@ public class DblpSearchPreferences {
     private NotationFormat format;
     private Optional<Integer> topCount;
     private Optional<Integer> numberOfCompletions;
+    private boolean completeWordsOnly;
 
     public DblpSearchPreferences(){}
 
-    public DblpSearchPreferences(String searchQuery, DblpSearchEntity entity, NotationFormat format, int topCount, int numberOfCompletions) {
+    public DblpSearchPreferences(String searchQuery, DblpSearchEntity entity, NotationFormat format, int topCount, int numberOfCompletions, boolean completeWordsOnly) {
         this.searchQuery = searchQuery;
         this.entity = entity;
         this.format = format;
         this.topCount = Optional.of(topCount);
         this.numberOfCompletions = Optional.of(numberOfCompletions);
+        this.completeWordsOnly = completeWordsOnly;
     }
 
     public String getSearchQuery() {
@@ -60,5 +62,13 @@ public class DblpSearchPreferences {
 
     public void setNumberOfCompletions(int numberOfCompletions) {
         this.numberOfCompletions = Optional.of(numberOfCompletions);
+    }
+
+    public boolean getCompleteWordsOnly() {
+        return completeWordsOnly;
+    }
+
+    public void setCompleteWordsOnly(boolean completeWordsOnly) {
+        this.completeWordsOnly = completeWordsOnly;
     }
 }

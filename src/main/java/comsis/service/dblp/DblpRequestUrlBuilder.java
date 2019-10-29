@@ -5,14 +5,16 @@ import comsis.core.enums.DblpSearchEntity;
 import comsis.core.enums.NotationFormat;
 import comsis.core.utils.DblpSearchPreferences;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 
-public class DblpQueryBuilder {
+public class DblpRequestUrlBuilder {
     private static final NotationFormat DEFAULT_NOTATION_FORMAT = NotationFormat.JSON;
     private static final int DEFAULT_TOP_COUNT = 30;
     private static final int DEFAULT_NUMBER_OF_COMPLETIONS = 10;
 
-    public static String generateSearchQuery(DblpSearchPreferences preferences) {
+    public static URL generateRequestUrl(DblpSearchPreferences preferences) throws MalformedURLException {
         Guard.AgainstNull(preferences);
         Guard.AgainstNull(preferences.getEntity());
         Guard.AgainstNull(preferences.getSearchQuery());
@@ -24,7 +26,7 @@ public class DblpQueryBuilder {
         searchQuery.append(getSearchTopCount(preferences.getTopCount()));
         searchQuery.append(getNumberOfCompletions(preferences.getNumberOfCompletions()));
 
-        return searchQuery.toString();
+        return new URL(searchQuery.toString());
     }
 
     private static String getSearchNotationFormat(NotationFormat format) {

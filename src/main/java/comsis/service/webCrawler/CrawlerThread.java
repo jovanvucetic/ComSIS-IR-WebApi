@@ -1,6 +1,6 @@
 package comsis.service.webCrawler;
 
-import comsis.core.model.comsis.PageInfo;
+import comsis.core.model.comsis.WebPageData;
 import comsis.common.structure.SynchronizedQueue;
 import comsis.common.structure.SynchronizedSet;
 import org.jsoup.Jsoup;
@@ -12,7 +12,7 @@ public class CrawlerThread extends Thread {
 
     private int id;
     private String seedUrl;
-    private SynchronizedQueue<PageInfo> urlQueue;
+    private SynchronizedQueue<WebPageData> urlQueue;
     private boolean waitingForUrls;
     private DocumentProcessor documentProcessor;
 
@@ -25,7 +25,7 @@ public class CrawlerThread extends Thread {
 
     @Override
     public void run() {
-        PageInfo currentPage = null;
+        WebPageData currentPage = null;
         try {
             while(true) {
                 currentPage = getPageAsync();
@@ -48,11 +48,11 @@ public class CrawlerThread extends Thread {
         }
     }
 
-    public boolean isVaitingForUrls() {
+    public boolean isWaitingForUrls() {
         return waitingForUrls;
     }
 
-    private PageInfo getPageAsync() throws InterruptedException {
+    private WebPageData getPageAsync() throws InterruptedException {
         synchronized (urlQueue) {
             while (urlQueue.isEmpty()) {
                 waitingForUrls = true;

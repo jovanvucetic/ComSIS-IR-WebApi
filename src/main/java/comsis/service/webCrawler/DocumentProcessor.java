@@ -1,6 +1,6 @@
 package comsis.service.webCrawler;
 
-import comsis.core.model.comsis.PageInfo;
+import comsis.core.model.comsis.WebPageData;
 import comsis.core.model.comsis.PublicationPage;
 import comsis.common.structure.SynchronizedQueue;
 import comsis.common.structure.SynchronizedSet;
@@ -14,9 +14,10 @@ public class DocumentProcessor {
     private static final String PUBLICATION_TITLE_SELECTOR = "h1.title";
     private static final String PUBLICATION_ABSTRACT_SELECTOR = "h3:contains(Abstract)";
     private static final String ISSUE_SELECTOR = "a[href*=archive.php?show=vol]";
+    private static final String PUBLICATION_AFFILIATIONS_SELECTOR = "ol";
+    private static final String PUBLICATION_DOWNLOAD_LINK = "a.download";
 
-
-    private SynchronizedQueue<PageInfo> urlQueue;
+    private SynchronizedQueue<WebPageData> urlQueue;
     private SynchronizedSet<String> visitedUrls;
     private SynchronizedSet<PublicationPage> loadedPublications;
 
@@ -50,7 +51,7 @@ public class DocumentProcessor {
             if(!visitedUrls.contains(linkUrl)) {
                 newPublicationLoaded = true;
                 visitedUrls.add(linkUrl);
-                urlQueue.add(new PageInfo(linkUrl, 1));
+                urlQueue.add(new WebPageData(linkUrl, 1));
             }
         }
 
@@ -64,10 +65,12 @@ public class DocumentProcessor {
     private void extractPublicationData(Document document) {
         String publicationTitle = document.select(PUBLICATION_TITLE_SELECTOR).text();
         String publicationAuthors = document.select(PUBLICATION_AUTHOR_SELECTOR).html();
-        String institutions = document.select(PUBLICATION_AUTHOR_SELECTOR).next().html();
+        String affiliations = document.select(PUBLICATION_AFFILIATIONS_SELECTOR).html();
         String publicationAbstract = document.select(PUBLICATION_ABSTRACT_SELECTOR).next("p").text();
+        String publicationRelativeDownloadPath = document.select(PUBLICATION_DOWNLOAD_LINK).attr("href");
 
-        PublicationPage publicationPage = new PublicationPage(publicationTitle, publicationAuthors, institutions, publicationAbstract);
+        PublicationPage publicationPage = new PublicationPage(publicationTitle, publicationAuthors,
+                affiliations, publicationAbstract, publicationRelativeDownloadPath, document.baseUri());
         loadedPublications.add(publicationPage);
     }
 
@@ -80,7 +83,7 @@ public class DocumentProcessor {
             if(!visitedUrls.contains(linkUrl)) {
                 newPublicationLoaded = true;
                 visitedUrls.add(linkUrl);
-                urlQueue.add(new PageInfo(linkUrl, 2));
+                urlQueue.add(new WebPageData(linkUrl, 2));
             }
         }
 

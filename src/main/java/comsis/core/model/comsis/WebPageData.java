@@ -1,12 +1,12 @@
 package comsis.core.model.comsis;
 
-public class PageInfo {
+public class WebPageData {
     protected String url;
     protected int depth;
 
-    protected PageInfo() {}
+    protected WebPageData() {}
 
-    public PageInfo(String url, int depth) {
+    public WebPageData(String url, int depth) {
         this.url = url;
         this.depth = depth;
     }

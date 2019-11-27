@@ -1,26 +1,22 @@
 package comsis.core.model.comsis;
 
-public class PublicationPage {
-    private static final String AUTHORS_PARSING_REGEX = "<sup>(\\d)*(,\\d)*(,\\s\\d)*</sup>(,)?(\\sand)?";
 
+public class PublicationPage {
     private String publicationAbstract;
     private String publicationTitle;
-    private String[] publicationAuthors;
-    private  String institutitons;
-    private String authors;
+    private String affiliationsSection;
+    private String authorsSection;
+    private String publicationDownloadRelativePath;
+    private String pageUrl;
 
-    public PublicationPage(String publicationTitle, String publicationAuthors, String publicationAbstract) {
+    public PublicationPage(String publicationTitle, String publicationAuthors,
+                           String affiliations, String publicationAbstract, String publicationDownloadRelativePath, String pageUrl) {
         this.publicationTitle = publicationTitle;
-        this.publicationAuthors = publicationAuthors.split(AUTHORS_PARSING_REGEX);
-        System.out.println(printAuthors());
+        this.authorsSection = publicationAuthors;
+        this.affiliationsSection = affiliations;
         this.publicationAbstract = publicationAbstract;
-    }
-
-    public PublicationPage(String publicationTitle, String publicationAuthors, String institutions, String publicationAbstract) {
-        this.publicationTitle = publicationTitle;
-        this.authors = publicationAuthors;
-        this.institutitons = institutions;
-        this.publicationAbstract = publicationAbstract;
+        this.publicationDownloadRelativePath = publicationDownloadRelativePath;
+        this.pageUrl = pageUrl;
     }
 
     public String getPublicationAbstract() {
@@ -31,30 +27,15 @@ public class PublicationPage {
         return publicationTitle;
     }
 
-    public String[] getPublicationAuthors() {
-        return publicationAuthors;
+    public String getAuthorsSection() {
+        return authorsSection;
     }
 
-    @Override
-    public String toString() {
-      return publicationTitle + " --- " + printAuthors() + publicationAbstract.substring(0, 10);
+    public String getAffiliationsSection() {
+        return affiliationsSection;
     }
 
-    private String printAuthors() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for(String author : publicationAuthors) {
-            stringBuilder.append(author + " --- ");
-        }
-        return  stringBuilder.toString();
-    }
+    public String getPageUrl() { return pageUrl; }
 
-    public String formatForFileWriter() {
-        StringBuilder sb = new StringBuilder(authors);
-        sb.append("\n");
-        sb.append(institutitons);
-        sb.append("\n");
-        sb.append("________________________________________________________________________________________________");
-        sb.append("\n");
-        return sb.toString();
-    }
+    public String getPublicationDownloadRelativePath() { return  publicationDownloadRelativePath; }
 }

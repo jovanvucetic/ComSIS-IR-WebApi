@@ -1,6 +1,6 @@
 package comsis.service.webCrawler;
 
-import comsis.core.model.comsis.PageInfo;
+import comsis.core.model.comsis.WebPageData;
 import comsis.core.model.comsis.PublicationPage;
 import comsis.core.serviceInterface.WebCrawler;
 import comsis.common.structure.SynchronizedQueue;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Service
 public class CrawlerRunner implements WebCrawler {
-    private SynchronizedQueue<PageInfo> urlProcessingQueue = new SynchronizedQueue();
+    private SynchronizedQueue<WebPageData> urlProcessingQueue = new SynchronizedQueue();
     private SynchronizedSet<String> visitedUrls = new SynchronizedSet<>();
     private SynchronizedSet<PublicationPage> loadedPublications = new SynchronizedSet<>();
 
@@ -21,7 +21,7 @@ public class CrawlerRunner implements WebCrawler {
 
     public CrawlerRunner(@Value("${crawler.seed.url}")String seedUrl,
                          @Value("${number.of.crawlers}") int numberOfWorkers) {
-        urlProcessingQueue.add(new PageInfo(seedUrl, 0));
+        urlProcessingQueue.add(new WebPageData(seedUrl, 0));
         visitedUrls.add(seedUrl);
 
         for(int i = 0; i < numberOfWorkers; i ++) {
@@ -41,7 +41,7 @@ public class CrawlerRunner implements WebCrawler {
             finished = true;
 
             for(CrawlerThread crawlerThread : workers) {
-                if(crawlerThread.isAlive() && !crawlerThread.isVaitingForUrls()) {
+                if(crawlerThread.isAlive() && !crawlerThread.isWaitingForUrls()) {
                     finished = false;
                 }
             }

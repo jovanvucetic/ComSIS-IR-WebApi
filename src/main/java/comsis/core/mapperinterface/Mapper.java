@@ -1,4 +1,4 @@
-package comsis.service.mapperinterface;
+package comsis.core.mapperinterface;
 
 public interface Mapper<DtoModel, ServiceModel>{
 

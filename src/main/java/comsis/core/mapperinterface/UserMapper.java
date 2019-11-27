@@ -1,4 +1,4 @@
-package comsis.service.mapperinterface;
+package comsis.core.mapperinterface;
 
 import comsis.core.model.User;
 import comsis.data.entity.UserDto;

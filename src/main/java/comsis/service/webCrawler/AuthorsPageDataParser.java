@@ -2,7 +2,7 @@ package comsis.service.webCrawler;
 
 import comsis.core.exception.InvalidAffiliationException;
 import comsis.core.model.comsis.Affiliation;
-import comsis.core.model.comsis.Author;
+import comsis.core.model.Author;
 import java.util.*;
 import java.util.stream.Collectors;
 

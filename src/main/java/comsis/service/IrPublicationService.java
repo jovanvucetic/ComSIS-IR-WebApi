@@ -1,13 +1,13 @@
 package comsis.service;
 
 import comsis.core.exception.InvalidAffiliationException;
-import comsis.core.model.comsis.Author;
-import comsis.core.model.comsis.Publication;
+import comsis.core.model.Publication;
 import comsis.core.model.comsis.PublicationPage;
 import comsis.core.serviceInterface.PublicationService;
 import comsis.service.webCrawler.CrawlerRunner;
 import comsis.service.webCrawler.PublicationPageDataParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,8 +18,14 @@ import java.util.Set;
 @Service
 public class IrPublicationService implements PublicationService {
 
+    private String downloadSiteUrl;
+
     @Autowired
     private CrawlerRunner crawlerRunner;
+
+    public IrPublicationService(@Value("${download.site.url}")String downloadSiteUrl){
+        this.downloadSiteUrl = downloadSiteUrl;
+    }
 
     @Override
     public void reloadComSisPublications() {
@@ -40,12 +46,12 @@ public class IrPublicationService implements PublicationService {
             Iterator<PublicationPage> it = paperPageSet.iterator();
             while (it.hasNext()) {
 
-                PublicationPage pp = it.next();
+                PublicationPage publicationPage = it.next();
                 try{
-                    Publication publication = PublicationPageDataParser.parsePublication(pp);
+                    Publication publication = PublicationPageDataParser.parsePublication(publicationPage, downloadSiteUrl);
                     publicationList.add(publication);
                 } catch (InvalidAffiliationException e) {
-                    System.out.println(pp.getPageUrl());
+                    System.out.println(publicationPage.getPageUrl());
                 }
             }
         }

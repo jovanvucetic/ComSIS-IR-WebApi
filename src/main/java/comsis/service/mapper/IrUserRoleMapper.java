@@ -2,7 +2,7 @@ package comsis.service.mapper;
 
 import comsis.core.model.UserRole;
 import comsis.data.entity.UserRoleDto;
-import comsis.service.mapperinterface.UserRoleMapper;
+import comsis.core.mapperinterface.UserRoleMapper;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,12 +1,6 @@
 package comsis;
 
 import comsis.core.exception.InvalidAffiliationException;
-import comsis.core.model.comsis.Affiliation;
-import comsis.core.model.comsis.Author;
-import comsis.service.webCrawler.AuthorsPageDataParser;
-
-import java.util.List;
-import java.util.Map;
 
 public class MainTest {
     public static void main(String []args) throws InvalidAffiliationException {

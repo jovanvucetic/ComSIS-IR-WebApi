@@ -5,7 +5,7 @@ import comsis.core.model.UserRole;
 import comsis.core.serviceInterface.UserService;
 import comsis.data.entity.UserDto;
 import comsis.data.repositoryInterface.UserRepository;
-import comsis.service.mapperinterface.UserMapper;
+import comsis.core.mapperinterface.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

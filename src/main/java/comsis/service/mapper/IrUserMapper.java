@@ -2,8 +2,8 @@ package comsis.service.mapper;
 
 import comsis.core.model.User;
 import comsis.data.entity.UserDto;
-import comsis.service.mapperinterface.UserMapper;
-import comsis.service.mapperinterface.UserRoleMapper;
+import comsis.core.mapperinterface.UserMapper;
+import comsis.core.mapperinterface.UserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

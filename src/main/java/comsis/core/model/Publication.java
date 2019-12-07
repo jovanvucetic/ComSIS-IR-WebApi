@@ -35,6 +35,8 @@ public class Publication {
         return authors;
     }
 
+    public void setAuthors(List<Author> authors) {this.authors = authors;}
+
     public UUID getId() {
         return id;
     }

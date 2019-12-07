@@ -20,7 +20,6 @@ public class ComsisIrWebApi {
 
     public static void main(String[] args) {
         SpringApplication.run(ComsisIrWebApi.class, args);
-
     }
 
     public BCryptPasswordEncoder encoder(){
@@ -29,6 +28,6 @@ public class ComsisIrWebApi {
 
     @EventListener(ApplicationReadyEvent.class)
     public void insertMockUser() {
-        crawlerRunner.reloadComSisPublications();
-    }
+        crawlerRunner.indexPublications();
+}
 }

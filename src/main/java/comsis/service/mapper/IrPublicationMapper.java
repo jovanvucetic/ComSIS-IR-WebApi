@@ -7,7 +7,6 @@ import comsis.core.model.Publication;
 import comsis.data.entity.AuthorDto;
 import comsis.data.entity.PublicationDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class IrPublicationMapper implements PublicationMapper {
                 .map(authorDto -> authorMapper.toServiceModel(authorDto))
                 .collect(Collectors.toList());
 
-        return new Publication(publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
+        return new Publication(publicationDto.getId(), publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
                 authors, publicationDto.getDownloadPath());
     }
 }

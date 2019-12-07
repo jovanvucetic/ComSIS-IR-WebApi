@@ -6,7 +6,8 @@ import javax.persistence.*;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity(name = "ir_author")
+@Entity
+@Table(name="ir_author", schema = "public")
 public class AuthorDto {
 
     @Id
@@ -15,13 +16,12 @@ public class AuthorDto {
 
     private String name;
 
-    @UniqueElements
     private String email;
 
     private String institution;
 
     @ManyToMany(mappedBy = "authors")
-    private Set<PublicationDto> papers;
+    private Set<PublicationDto> publications;
 
     public AuthorDto(String name) {
         this.name = name;
@@ -61,11 +61,9 @@ public class AuthorDto {
         this.institution = institution;
     }
 
-    public Set<PublicationDto> getPapers() {
-        return papers;
+    public Set<PublicationDto> getPublications() {
+        return publications;
     }
 
-    public void setPapers(Set<PublicationDto> papers) {
-        this.papers = papers;
-    }
+    public void setPublications(Set<PublicationDto> publications) { this.publications = publications;}
 }

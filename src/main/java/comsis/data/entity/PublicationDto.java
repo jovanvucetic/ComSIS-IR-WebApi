@@ -4,7 +4,8 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "ir_paper")
+@Entity
+@Table(name="ir_publication", schema = "public")
 public class PublicationDto {
 
     @Id
@@ -18,7 +19,7 @@ public class PublicationDto {
 
     private String downloadPath;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<AuthorDto> authors;
 
     public PublicationDto() {}

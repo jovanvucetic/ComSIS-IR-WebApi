@@ -1,6 +1,6 @@
 package comsis.core.serviceInterface;
 
-import comsis.core.model.Publication;
+import comsis.core.model.PublicationData;
 
 public interface PublicationService {
 
@@ -8,5 +8,5 @@ public interface PublicationService {
 
     void indexPublications();
 
-    void createPublication(Publication publication);
+    void createPublication(PublicationData publicationData);
 }

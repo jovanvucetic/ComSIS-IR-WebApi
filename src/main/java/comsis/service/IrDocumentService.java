@@ -56,7 +56,7 @@ public class IrDocumentService implements DocumentService {
         COSDocument cosDoc = null;
         PDFTextStripper pdfStripper;
 
-        String parsedText;
+        String parsedText = "";
         String fileName = getDocumentPath(documentId);
         File file = new File(fileName);
         try {
@@ -66,9 +66,11 @@ public class IrDocumentService implements DocumentService {
             pdfStripper = new PDFTextStripper();
             pdDoc = new PDDocument(cosDoc);
             parsedText = pdfStripper.getText(pdDoc);
-            return  parsedText.replaceAll("[^A-Za-z0-9. ]+", "");
+            parsedText.replaceAll("[^A-Za-z0-9. ]+", "");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
             try {
                 if (cosDoc != null)
                     cosDoc.close();
@@ -79,6 +81,6 @@ public class IrDocumentService implements DocumentService {
             }
         }
 
-        return "";
+        return parsedText;
     }
 }

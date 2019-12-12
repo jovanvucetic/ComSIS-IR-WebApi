@@ -3,7 +3,7 @@ package comsis.service.mapper;
 import comsis.core.mapperinterface.AuthorMapper;
 import comsis.core.mapperinterface.PublicationMapper;
 import comsis.core.model.Author;
-import comsis.core.model.Publication;
+import comsis.core.model.PublicationData;
 import comsis.data.entity.AuthorDto;
 import comsis.data.entity.PublicationDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +19,19 @@ public class IrPublicationMapper implements PublicationMapper {
     private AuthorMapper authorMapper;
 
     @Override
-    public PublicationDto toDto(Publication publication) {
-        if(publication == null){
+    public PublicationDto toDto(PublicationData publicationData) {
+        if(publicationData == null){
             return null;
         }
 
         PublicationDto dto = new PublicationDto();
 
-        dto.setId(publication.getId());
-        dto.setTitle(publication.getTitle());
-        dto.setPublicationAbstract(publication.getPublicationAbstract());
-        dto.setDownloadPath(publication.getDownloadPath());
+        dto.setId(publicationData.getId());
+        dto.setTitle(publicationData.getTitle());
+        dto.setPublicationAbstract(publicationData.getPublicationAbstract());
+        dto.setDownloadPath(publicationData.getDownloadPath());
 
-        List<AuthorDto> authorList = publication.getAuthors().stream()
+        List<AuthorDto> authorList = publicationData.getAuthors().stream()
                 .map(author -> authorMapper.toDto(author))
                 .collect(Collectors.toList());
 
@@ -41,7 +41,7 @@ public class IrPublicationMapper implements PublicationMapper {
     }
 
     @Override
-    public Publication toServiceModel(PublicationDto publicationDto) {
+    public PublicationData toServiceModel(PublicationDto publicationDto) {
         if(publicationDto == null) {
             return null;
         }
@@ -50,7 +50,7 @@ public class IrPublicationMapper implements PublicationMapper {
                 .map(authorDto -> authorMapper.toServiceModel(authorDto))
                 .collect(Collectors.toList());
 
-        return new Publication(publicationDto.getId(), publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
+        return new PublicationData(publicationDto.getId(), publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
                 authors, publicationDto.getDownloadPath());
     }
 }

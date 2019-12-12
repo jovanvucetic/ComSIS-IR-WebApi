@@ -3,10 +3,10 @@ package comsis.service;
 import comsis.core.exception.InvalidAffiliationException;
 import comsis.core.mapperinterface.PublicationMapper;
 import comsis.core.model.Author;
-import comsis.core.model.Publication;
+import comsis.core.model.PublicationData;
 import comsis.core.model.comsis.PublicationPage;
 import comsis.core.serviceInterface.AuthorService;
-import comsis.core.serviceInterface.PublicationIndexer;
+import comsis.core.serviceInterface.IndexService;
 import comsis.core.serviceInterface.PublicationService;
 import comsis.data.entity.PublicationDto;
 import comsis.data.repositoryInterface.PublicationRepository;
@@ -39,7 +39,7 @@ public class IrPublicationService implements PublicationService {
     private PublicationMapper publicationMapper;
 
     @Autowired
-    private PublicationIndexer publicationIndexer;
+    private IndexService indexService;
 
     public IrPublicationService(@Value("${download.site.url}")String downloadSiteUrl){
         this.downloadSiteUrl = downloadSiteUrl;
@@ -55,51 +55,51 @@ public class IrPublicationService implements PublicationService {
             e.printStackTrace();
         }
 
-        List<Publication> publications = parsePublications(paperPageSet);
+        List<PublicationData> publicationDataList = parsePublications(paperPageSet);
 
-        for(Publication publication : publications) {
-            createPublication(publication);
+        for(PublicationData publicationData : publicationDataList) {
+            createPublication(publicationData);
         }
     }
 
     @Override
     public void indexPublications() {
         Iterator<PublicationDto> publicationsDtos = publicationRepository.findAll().iterator();
-        List<Publication> publications = new ArrayList<>();
+        List<PublicationData> publicationData = new ArrayList<>();
         while(publicationsDtos.hasNext()){
-            publications.add(publicationMapper.toServiceModel(publicationsDtos.next()));
+            publicationData.add(publicationMapper.toServiceModel(publicationsDtos.next()));
         }
 
-        publicationIndexer.indexPublications(publications);
+        indexService.indexPublications(publicationData);
     }
 
     @Override
-    public void createPublication(Publication publication) {
+    public void createPublication(PublicationData publicationData) {
         List<Author> authors = new ArrayList<>();
-        for(Author a : publication.getAuthors()){
+        for(Author a : publicationData.getAuthors()){
             Author author = authorService.getOrCreate(a);
             authors.add(author);
         }
 
-        publication.setAuthors(authors);
-        publicationRepository.save(publicationMapper.toDto(publication));
+        publicationData.setAuthors(authors);
+        publicationRepository.save(publicationMapper.toDto(publicationData));
     }
 
-    private List<Publication> parsePublications(Set<PublicationPage> paperPageSet) {
-        List<Publication> publicationList = new ArrayList<>();
+    private List<PublicationData> parsePublications(Set<PublicationPage> paperPageSet) {
+        List<PublicationData> publicationDataList = new ArrayList<>();
         if(paperPageSet != null) {
             Iterator<PublicationPage> it = paperPageSet.iterator();
             while (it.hasNext()) {
 
                 PublicationPage publicationPage = it.next();
                 try{
-                    Publication publication = PublicationPageDataParser.parsePublication(publicationPage, downloadSiteUrl);
-                    publicationList.add(publication);
+                    PublicationData publicationData = PublicationPageDataParser.parsePublication(publicationPage, downloadSiteUrl);
+                    publicationDataList.add(publicationData);
                 } catch (InvalidAffiliationException e) {
                     System.out.println(publicationPage.getPageUrl());
                 }
             }
         }
-        return publicationList;
+        return publicationDataList;
     }
 }

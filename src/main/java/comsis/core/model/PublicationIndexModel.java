@@ -8,7 +8,8 @@ public class PublicationIndexModel {
     private String title;
     private String publicationAbstract;
     private List<Author> authors;
-    private String textContent;
+    private String year;
+    private String documentDownloadPath;
 
     public UUID getId() {
         return id;
@@ -26,22 +27,30 @@ public class PublicationIndexModel {
         return authors;
     }
 
-    public String getTextContent() {
-        return textContent;
+    public String getYear() {
+        return year;
     }
 
-    public PublicationIndexModel(PublicationData publicationData, String pdfText) {
+    public String getDocumentDownloadPath() {
+        return documentDownloadPath;
+    }
+
+    public PublicationIndexModel(PublicationData publicationData) {
         this.id = publicationData.getId();
         this.title = publicationData.getTitle();
         this.authors = publicationData.getAuthors();
         this.publicationAbstract = publicationData.getPublicationAbstract();
-        this.textContent = pdfText;
+        this.year = ((Integer)publicationData.getYear()).toString();
+        this.documentDownloadPath = publicationData.getDownloadPath();
     }
 
-    public PublicationIndexModel(String title, String publicationAbstract, List<Author> authors, String textContent) {
+    public PublicationIndexModel(UUID id, String title, String publicationAbstract,
+                                 List<Author> authors, String year, String downloadPath) {
         this.title = title;
         this.publicationAbstract = publicationAbstract;
         this.authors = authors;
-        this.textContent = textContent;
+        this.documentDownloadPath = downloadPath;
+        this.year = year;
+        this.id = id;
     }
 }

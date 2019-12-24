@@ -1,5 +1,7 @@
 package comsis.core.serviceInterface;
 
+import comsis.core.model.dblp.DblpPublication;
+
 public interface DblpSearchService {
-    String findPublicationByTitle(String title);
+    DblpPublication findPublicationByTitle(String title);
 }

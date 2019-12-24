@@ -22,9 +22,13 @@ public class PublicationDto {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<AuthorDto> authors;
 
+    private int year;
+
+    private String venue;
+
     public PublicationDto() {}
 
-    public PublicationDto(String title, String publicationAbstract, String downloadPath, List<AuthorDto> authorDtos) {
+    public PublicationDto(String title, String publicationAbstract, String downloadPath, int year, String venue, List<AuthorDto> authorDtos) {
         this.title = title;
         this.publicationAbstract = publicationAbstract;
         this.downloadPath = downloadPath;
@@ -69,5 +73,21 @@ public class PublicationDto {
 
     public void setAuthors(List<AuthorDto> authors) {
         this.authors = authors;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public String getVenue() {
+        return venue;
+    }
+
+    public void setVenue(String venue) {
+        this.venue = venue;
     }
 }

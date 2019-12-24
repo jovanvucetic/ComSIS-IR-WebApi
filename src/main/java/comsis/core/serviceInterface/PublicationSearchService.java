@@ -13,4 +13,6 @@ public interface PublicationSearchService {
     List<Publication> getPublicationsByAbstract(String query, int numberOfHits);
 
     List<Publication> getPublicationsByWords(String query, int numberOfHits);
+
+    List<Publication> getPublicationsByYear(int year, int numberOfHits);
 }

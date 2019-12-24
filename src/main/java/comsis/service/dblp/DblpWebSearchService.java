@@ -19,7 +19,7 @@ import java.net.URL;
 public class DblpWebSearchService implements DblpSearchService {
 
     @Override
-    public String findPublicationByTitle(String title) {
+    public DblpPublication findPublicationByTitle(String title) {
         DblpSearchPreferences searchPreferences = new DblpSearchPreferences(title, DblpSearchEntity.PUBLICATIONS,
                 NotationFormat.JSON, 10, 0, true);
 
@@ -29,7 +29,11 @@ public class DblpWebSearchService implements DblpSearchService {
             Gson gson = new GsonBuilder().create();
             DblpResponse<DblpPublication> response = gson.fromJson(jsonResponse, (new TypeToken<DblpResponse<DblpPublication>>(){}).getType());
 
-            return response.getResult().getHits().getHit().length + "";
+            if(response == null) {
+                return null;
+            }
+
+            return response.getFirstHitObject();
         } catch (IOException e) {
             e.printStackTrace();
             return null;

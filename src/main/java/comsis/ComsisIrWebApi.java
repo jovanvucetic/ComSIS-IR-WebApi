@@ -26,8 +26,8 @@ public class ComsisIrWebApi {
         return new BCryptPasswordEncoder();
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void insertMockUser() {
-        crawlerRunner.indexPublications();
-}
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void insertMockUser() {
+//        //crawlerRunner.indexPublications();
+//    }
 }

@@ -1,5 +1,9 @@
 package comsis.service.lucene;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import comsis.core.model.Author;
 import comsis.core.model.PublicationIndexModel;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -19,9 +23,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static comsis.core.utils.Constants.Index.*;
+import static comsis.core.utils.Constants.Index.Publication;
+
 
 public class IrPublicationSearcher {
     private IndexReader indexReader;
@@ -63,15 +69,25 @@ public class IrPublicationSearcher {
     private PublicationIndexModel extractPublicationFromScoreDoc(ScoreDoc scoreDoc) {
         try {
             Document document = searcher.doc(scoreDoc.doc);
-            String title = document.get(TITLE_SEARCH_KEY);
-            String paperAbstract = document.get(ABSTRACT_SEARCH_KEY);
-            String[] authors = document.get(AUTHORS_SEARCH_KEY).split(",");
-            String textContent = document.get(PUBLICATION_SEARCH_KEY);
 
-            return new PublicationIndexModel(title, paperAbstract, new ArrayList<>(), textContent);
+            UUID id = UUID.fromString( document.get(Publication.ID_SEARCH_KEY));
+            String title = document.get(Publication.TITLE_SEARCH_KEY);
+            String year = document.get(Publication.YEAR_SEARCH_KEY);
+            String downloadPath = document.get(Publication.DOWNLOAD_PATH_SEARCH_KEY);
+            String paperAbstract = document.get(Publication.ABSTRACT_SEARCH_KEY);
+            List<Author> authors = getAuthorsList(document);
+
+            return new PublicationIndexModel(id, title, paperAbstract, authors, year, downloadPath);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private List<Author> getAuthorsList(Document document) {
+        String authorsJson = document.get(Publication.AUTHOR_SEARCH_KEY);
+
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(authorsJson, (new TypeToken<List<Author>>(){}).getType());
     }
 }

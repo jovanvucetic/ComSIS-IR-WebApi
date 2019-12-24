@@ -40,6 +40,12 @@ public class IrPublicationSearchService implements PublicationSearchService {
         return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
     }
 
+    @Override
+    public List<Publication> getPublicationsByYear(int year, int numberOfHits) {
+        List<PublicationIndexModel> publicationIndexModels = indexService.getPublicationsByYear(year, numberOfHits);
+        return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
+    }
+
     private Publication parsePublication(PublicationIndexModel model) {
         if(model == null) {
             return  null;
@@ -51,7 +57,8 @@ public class IrPublicationSearchService implements PublicationSearchService {
         publication.setTitle(model.getTitle());
         publication.setAuthors(model.getAuthors());
         publication.setPublicationAbstract(model.getPublicationAbstract());
-        publication.setTextContent(model.getTextContent());
+        publication.setDownloadPath(model.getDocumentDownloadPath());
+        publication.setYear(Integer.parseInt(model.getYear()));
 
         return publication;
     }

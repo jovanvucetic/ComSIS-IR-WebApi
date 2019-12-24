@@ -11,7 +11,6 @@ public class DblpPublication extends DblpEntity{
     private String doi;
     private String ee;
     private String url;
-    private DblpPublicationAuthors authors;
 
     public String getTitle() {
         return title;
@@ -45,8 +44,14 @@ public class DblpPublication extends DblpEntity{
         this.pages = pages;
     }
 
-    public String getYear() {
-        return year;
+    public int getYear() {
+        try{
+            return Integer.parseInt(year);
+        }
+        catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public void setYear(String year) {
@@ -91,13 +96,5 @@ public class DblpPublication extends DblpEntity{
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public DblpPublicationAuthors getAuthors() {
-        return authors;
-    }
-
-    public void setAuthors(DblpPublicationAuthors authors) {
-        this.authors = authors;
     }
 }

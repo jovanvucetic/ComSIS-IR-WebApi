@@ -10,20 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.security.PublicKey;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static comsis.core.utils.Constants.Index.*;
+import static comsis.core.utils.Constants.Index.Publication;
 
 @Service
 public class IrIndexService implements IndexService {
 
-    @Autowired
-    private DocumentService documentService;
-
     private String indexFolderPath;
+
+    @Autowired
+    private  DocumentService documentService;
 
     public  IrIndexService(@Value("${index.folder.path}")String indexFolderPath){
         this.indexFolderPath = indexFolderPath;
@@ -32,44 +32,44 @@ public class IrIndexService implements IndexService {
     @Override
     public void indexPublications(Collection<PublicationData> publicationData) {
         List<PublicationIndexModel>  indexModels = publicationData.stream()
+                .filter(p -> p.validatePublication())
                 .map(this::getPublicationIndexModel)
                 .collect(Collectors.toList());
 
-        IrPublicationIndexer indexer = new IrPublicationIndexer(true, indexFolderPath);
-        indexer.indexPublications(indexModels, documentService);
+        IrPublicationIndexer indexer = new IrPublicationIndexer(true, indexFolderPath, documentService);
+        indexer.indexPublications(indexModels);
     }
 
     @Override
     public List<PublicationIndexModel> getPublicationsByTitle(String query, int numberOfHits) {
-        return searchPapers(TITLE_SEARCH_KEY, query, numberOfHits);
+        return searchPublication(Publication.TITLE_SEARCH_KEY, query, numberOfHits);
     }
 
     @Override
     public List<PublicationIndexModel> getPublicationsByAuthor(String query, int numberOfHits) {
-        return searchPapers(AUTHORS_SEARCH_KEY, query, numberOfHits);
+        return searchPublication(Publication.AUTHOR_SEARCH_KEY, query, numberOfHits);
     }
 
     @Override
     public List<PublicationIndexModel> getPublicationsByAbstract(String query, int numberOfHits) {
-        return searchPapers(ABSTRACT_SEARCH_KEY, query, numberOfHits);
+        return searchPublication(Publication.ABSTRACT_SEARCH_KEY, query, numberOfHits);
     }
 
     @Override
     public List<PublicationIndexModel> getPublicationsByWords(String query, int numberOfHits) {
-        return searchPapers(PUBLICATION_SEARCH_KEY, query, numberOfHits);
+        return searchPublication(Publication.PUBLICATION_CONTENT_SEARCH_KEY, query, numberOfHits);
+    }
+
+    @Override
+    public List<PublicationIndexModel> getPublicationsByYear(int year, int numberOfHits) {
+        return searchPublication(Publication.YEAR_SEARCH_KEY, ((Integer)year).toString(), numberOfHits);
     }
 
     private PublicationIndexModel getPublicationIndexModel(PublicationData publicationData) {
-        String publicationPdfText = "";//getPublicationPdfText(publicationData.getId(), publicationData.getDownloadPath());
-        return new PublicationIndexModel(publicationData, publicationPdfText);
+        return new PublicationIndexModel(publicationData);
     }
 
-    private String getPublicationPdfText(UUID publicationId, String publicationDownloadPath) {
-        documentService.downloadPdfIfNotExist(publicationId, publicationDownloadPath);
-        return documentService.readPdf(publicationId);
-    }
-
-    private List<PublicationIndexModel> searchPapers(String field, String query, int numberOfHits) {
+    private List<PublicationIndexModel> searchPublication(String field, String query, int numberOfHits) {
         IrPublicationSearcher publicationSearcher = new IrPublicationSearcher(indexFolderPath);
         return publicationSearcher.search(field, query, numberOfHits);
     }

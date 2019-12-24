@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/publication/search")
@@ -40,5 +39,11 @@ public class PublicationSearchController {
     public PublicationsResponse searchPapersByWords(@RequestParam String query,
                                                            @RequestParam(value = "count", defaultValue = TOP_COUNT, required = false) int count) {
         return PublicationsResponse.fromPublicationList(publicationSearchService.getPublicationsByWords(query, count));
+    }
+
+    @RequestMapping("/year")
+    public PublicationsResponse searchPapersByYer(@RequestParam int year,
+                                                    @RequestParam(value = "count", defaultValue = TOP_COUNT, required = false) int count) {
+        return PublicationsResponse.fromPublicationList(publicationSearchService.getPublicationsByYear(year, count));
     }
 }

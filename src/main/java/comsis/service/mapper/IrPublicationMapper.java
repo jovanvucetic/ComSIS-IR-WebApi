@@ -30,6 +30,8 @@ public class IrPublicationMapper implements PublicationMapper {
         dto.setTitle(publicationData.getTitle());
         dto.setPublicationAbstract(publicationData.getPublicationAbstract());
         dto.setDownloadPath(publicationData.getDownloadPath());
+        dto.setVenue(publicationData.getVenue());
+        dto.setYear(publicationData.getYear());
 
         List<AuthorDto> authorList = publicationData.getAuthors().stream()
                 .map(author -> authorMapper.toDto(author))
@@ -50,7 +52,11 @@ public class IrPublicationMapper implements PublicationMapper {
                 .map(authorDto -> authorMapper.toServiceModel(authorDto))
                 .collect(Collectors.toList());
 
-        return new PublicationData(publicationDto.getId(), publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
+        PublicationData publicationData = new PublicationData(publicationDto.getId(), publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
                 authors, publicationDto.getDownloadPath());
+        publicationData.setVenue(publicationDto.getVenue());
+        publicationData.setYear(publicationDto.getYear());
+
+        return publicationData;
     }
 }

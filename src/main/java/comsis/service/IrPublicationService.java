@@ -5,9 +5,8 @@ import comsis.core.mapperinterface.PublicationMapper;
 import comsis.core.model.Author;
 import comsis.core.model.PublicationData;
 import comsis.core.model.comsis.PublicationPage;
-import comsis.core.serviceInterface.AuthorService;
-import comsis.core.serviceInterface.IndexService;
-import comsis.core.serviceInterface.PublicationService;
+import comsis.core.model.dblp.DblpPublication;
+import comsis.core.serviceInterface.*;
 import comsis.data.entity.PublicationDto;
 import comsis.data.repositoryInterface.PublicationRepository;
 import comsis.service.webCrawler.CrawlerRunner;
@@ -27,6 +26,9 @@ public class IrPublicationService implements PublicationService {
     private String downloadSiteUrl;
 
     @Autowired
+    private DocumentService documentService;
+
+    @Autowired
     private CrawlerRunner crawlerRunner;
 
     @Autowired
@@ -40,6 +42,9 @@ public class IrPublicationService implements PublicationService {
 
     @Autowired
     private IndexService indexService;
+
+    @Autowired
+    private DblpSearchService dblpSearchService;
 
     public IrPublicationService(@Value("${download.site.url}")String downloadSiteUrl){
         this.downloadSiteUrl = downloadSiteUrl;
@@ -58,7 +63,19 @@ public class IrPublicationService implements PublicationService {
         List<PublicationData> publicationDataList = parsePublications(paperPageSet);
 
         for(PublicationData publicationData : publicationDataList) {
+            DblpPublication dblpPublication = findDblpPublication(publicationData.getTitle());
+            if(dblpPublication != null) {
+                publicationData.setYear(dblpPublication.getYear());
+                publicationData.setVenue(dblpPublication.getVenue());
+            }
+
             createPublication(publicationData);
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -67,7 +84,10 @@ public class IrPublicationService implements PublicationService {
         Iterator<PublicationDto> publicationsDtos = publicationRepository.findAll().iterator();
         List<PublicationData> publicationData = new ArrayList<>();
         while(publicationsDtos.hasNext()){
-            publicationData.add(publicationMapper.toServiceModel(publicationsDtos.next()));
+            PublicationData publication = publicationMapper.toServiceModel(publicationsDtos.next());
+            documentService.downloadPdfIfNotExist(publication.getId(), publication.getDownloadPath());
+            documentService.parseAndSavePdfText(publication.getId());
+            publicationData.add(publication);
         }
 
         indexService.indexPublications(publicationData);
@@ -83,6 +103,10 @@ public class IrPublicationService implements PublicationService {
 
         publicationData.setAuthors(authors);
         publicationRepository.save(publicationMapper.toDto(publicationData));
+    }
+
+    public DblpPublication findDblpPublication(String publicationTitle){
+        return dblpSearchService.findPublicationByTitle(publicationTitle);
     }
 
     private List<PublicationData> parsePublications(Set<PublicationPage> paperPageSet) {

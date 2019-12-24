@@ -3,7 +3,6 @@ package comsis.service;
 import comsis.core.serviceInterface.DocumentService;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -12,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
@@ -24,13 +25,8 @@ public class IrDocumentService implements DocumentService {
     }
 
     @Override
-    public String getDocumentPath(UUID documentId) {
-        return documentRepositoryFolderPath + "\\" + documentId + ".pdf";
-    }
-
-    @Override
     public void downloadPdfIfNotExist(UUID documentId, String downloadUrlPath) {
-        String documentPath = getDocumentPath(documentId);
+        String documentPath = getPdfPath(documentId);
 
         File pdf = new File(documentPath);
         if(pdf.exists()) {
@@ -50,15 +46,53 @@ public class IrDocumentService implements DocumentService {
     }
 
     @Override
-    public String readPdf(UUID documentId) {
-        PDFParser parser = null;
+    public void parseAndSavePdfText(UUID documentId) {
+        String pdfContent = parsePdfTextContent(documentId);
+
+        if(pdfContent.equals("")) {
+            return;
+        }
+
+        String txtFilePath = getTxtFilePath(documentId);
+        File file = new File(txtFilePath);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+            writer.write(pdfContent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            try {
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public String readDocumentContent(UUID documentId) {
+        String txtFilePath = getTxtFilePath(documentId);
+
+        String data = "";
+        try {
+            data = new String(Files.readAllBytes(Paths.get(txtFilePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+    private String parsePdfTextContent(UUID documentId) {
+        PDFParser parser;
         PDDocument pdDoc = null;
         COSDocument cosDoc = null;
         PDFTextStripper pdfStripper;
 
         String parsedText = "";
-        String fileName = getDocumentPath(documentId);
-        File file = new File(fileName);
+        String filePath = getPdfPath(documentId);
+        File file = new File(filePath);
         try {
             parser = new PDFParser(new RandomAccessFile(file, "r"));
             parser.parse();
@@ -68,7 +102,7 @@ public class IrDocumentService implements DocumentService {
             parsedText = pdfStripper.getText(pdDoc);
             parsedText.replaceAll("[^A-Za-z0-9. ]+", "");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Document cannot be found for document id: " + documentId);
         }
         finally {
             try {
@@ -83,4 +117,10 @@ public class IrDocumentService implements DocumentService {
 
         return parsedText;
     }
+
+    private String getPdfPath(UUID documentId) {
+        return documentRepositoryFolderPath + "\\" + documentId + ".pdf";
+    }
+
+    private String getTxtFilePath(UUID documentId) {return documentRepositoryFolderPath + "\\" + documentId + ".txt";}
 }

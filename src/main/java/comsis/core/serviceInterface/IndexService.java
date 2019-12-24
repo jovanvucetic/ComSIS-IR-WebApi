@@ -16,4 +16,6 @@ public interface IndexService {
     List<PublicationIndexModel> getPublicationsByAbstract(String query, int numberOfHits);
 
     List<PublicationIndexModel> getPublicationsByWords(String query, int numberOfHits);
+
+    List<PublicationIndexModel> getPublicationsByYear(int year, int numberOfHits);
 }

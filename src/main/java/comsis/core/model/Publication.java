@@ -8,7 +8,8 @@ public class Publication {
     private String title;
     private String publicationAbstract;
     private String downloadPath;
-    private String textContent;
+    private String venue;
+    private int year;
     private List<Author> authors;
 
     public UUID getId() {
@@ -43,12 +44,12 @@ public class Publication {
         this.downloadPath = downloadPath;
     }
 
-    public String getTextContent() {
-        return textContent;
+    public String getVenue() {
+        return venue;
     }
 
-    public void setTextContent(String textContent) {
-        this.textContent = textContent;
+    public void setVenue(String textContent) {
+        this.venue = textContent;
     }
 
     public List<Author> getAuthors() {
@@ -57,5 +58,13 @@ public class Publication {
 
     public void setAuthors(List<Author> authors) {
         this.authors = authors;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

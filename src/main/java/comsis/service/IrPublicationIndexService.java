@@ -1,16 +1,16 @@
 package comsis.service;
-
 import comsis.core.model.PublicationData;
 import comsis.core.model.PublicationIndexModel;
+import comsis.core.model.WordFrequency;
 import comsis.core.serviceInterface.DocumentService;
-import comsis.core.serviceInterface.IndexService;
+import comsis.core.serviceInterface.PublicationIndexService;
 import comsis.service.lucene.IrPublicationIndexer;
 import comsis.service.lucene.IrPublicationSearcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,15 +18,15 @@ import java.util.stream.Collectors;
 import static comsis.core.utils.Constants.Index.Publication;
 
 @Service
-public class IrIndexService implements IndexService {
+public class IrPublicationIndexService implements PublicationIndexService {
 
-    private String indexFolderPath;
+    private String publicationIndexFolderPath;
 
     @Autowired
     private  DocumentService documentService;
 
-    public  IrIndexService(@Value("${index.folder.path}")String indexFolderPath){
-        this.indexFolderPath = indexFolderPath;
+    public IrPublicationIndexService(@Value("${index.folder.path}")String publicationIndexFolderPath) {
+        this.publicationIndexFolderPath = publicationIndexFolderPath;
     }
 
     @Override
@@ -36,8 +36,13 @@ public class IrIndexService implements IndexService {
                 .map(this::getPublicationIndexModel)
                 .collect(Collectors.toList());
 
-        IrPublicationIndexer indexer = new IrPublicationIndexer(true, indexFolderPath, documentService);
+        IrPublicationIndexer indexer = new IrPublicationIndexer(true, publicationIndexFolderPath, documentService);
         indexer.indexPublications(indexModels);
+    }
+
+    @Override
+    public List<PublicationIndexModel> getPublicationsById(String query, int numberOfHits) {
+        return searchPublication(Publication.ID_SEARCH_KEY, query, numberOfHits);
     }
 
     @Override
@@ -56,7 +61,7 @@ public class IrIndexService implements IndexService {
     }
 
     @Override
-    public List<PublicationIndexModel> getPublicationsByWords(String query, int numberOfHits) {
+    public List<PublicationIndexModel> getPublicationsByWordsInDocument(String query, int numberOfHits) {
         return searchPublication(Publication.PUBLICATION_CONTENT_SEARCH_KEY, query, numberOfHits);
     }
 
@@ -65,12 +70,30 @@ public class IrIndexService implements IndexService {
         return searchPublication(Publication.YEAR_SEARCH_KEY, ((Integer)year).toString(), numberOfHits);
     }
 
+    @Override
+    public List<PublicationIndexModel> getPublicationByKeyWords(String query, int numberOfHits) {
+        return searchPublication(Publication.KEY_WORDS_SEARCH_KEY, query, numberOfHits);
+    }
+
+    @Override
+    public List<WordFrequency> getMostFrequentTitleWords(int topCount) {
+        IrPublicationSearcher publicationSearcher = new IrPublicationSearcher(publicationIndexFolderPath);
+        return Arrays.stream(publicationSearcher.findMostFrequentWords(Publication.TITLE_SEARCH_KEY, topCount))
+                .map(termStats -> new WordFrequency(termStats.termtext.utf8ToString(), termStats.docFreq)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PublicationIndexModel> findAll() {
+        IrPublicationSearcher publicationSearcher = new IrPublicationSearcher(publicationIndexFolderPath);
+        return publicationSearcher.findAll();
+    }
+
     private PublicationIndexModel getPublicationIndexModel(PublicationData publicationData) {
         return new PublicationIndexModel(publicationData);
     }
 
     private List<PublicationIndexModel> searchPublication(String field, String query, int numberOfHits) {
-        IrPublicationSearcher publicationSearcher = new IrPublicationSearcher(indexFolderPath);
+        IrPublicationSearcher publicationSearcher = new IrPublicationSearcher(publicationIndexFolderPath);
         return publicationSearcher.search(field, query, numberOfHits);
     }
 }

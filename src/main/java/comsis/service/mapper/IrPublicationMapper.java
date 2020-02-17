@@ -37,6 +37,10 @@ public class IrPublicationMapper implements PublicationMapper {
                 .map(author -> authorMapper.toDto(author))
                 .collect(Collectors.toList());
 
+        if(publicationData.getKeyWords() != null) {
+            dto.setKeyWords(String.join(",", publicationData.getKeyWords()));
+        }
+
         dto.setAuthors(authorList);
 
         return dto;
@@ -52,10 +56,12 @@ public class IrPublicationMapper implements PublicationMapper {
                 .map(authorDto -> authorMapper.toServiceModel(authorDto))
                 .collect(Collectors.toList());
 
+        String[] keyWords = publicationDto.getKeyWords() != null ? publicationDto.getKeyWords().split(",") : new String[0];
         PublicationData publicationData = new PublicationData(publicationDto.getId(), publicationDto.getTitle(), publicationDto.getPublicationAbstract(),
-                authors, publicationDto.getDownloadPath());
+                keyWords, authors, publicationDto.getDownloadPath());
         publicationData.setVenue(publicationDto.getVenue());
         publicationData.setYear(publicationDto.getYear());
+
 
         return publicationData;
     }

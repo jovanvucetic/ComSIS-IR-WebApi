@@ -31,10 +31,6 @@ public class Author {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -49,5 +45,25 @@ public class Author {
 
     public void setInstitution(String institution) {
         this.institution = institution;
+    }
+
+    public boolean validateAuthor(){
+        if(id == null) {
+            return false;
+        }
+
+        if(fullName == null || fullName.isEmpty()){
+            return false;
+        }
+
+        if(email == null || email.isEmpty()){
+            return false;
+        }
+
+        if(institution == null || institution.isEmpty()){
+            return false;
+        }
+
+        return true;
     }
 }

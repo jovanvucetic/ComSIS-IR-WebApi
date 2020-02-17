@@ -26,6 +26,9 @@ public class PublicationDto {
 
     private String venue;
 
+    @Column(length = 1000)
+    private String keyWords;
+
     public PublicationDto() {}
 
     public PublicationDto(String title, String publicationAbstract, String downloadPath, int year, String venue, List<AuthorDto> authorDtos) {
@@ -89,5 +92,13 @@ public class PublicationDto {
 
     public void setVenue(String venue) {
         this.venue = venue;
+    }
+
+    public String getKeyWords() {
+        return keyWords;
+    }
+
+    public void setKeyWords(String keyWords) {
+        this.keyWords = keyWords;
     }
 }

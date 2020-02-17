@@ -2,9 +2,9 @@ package comsis.core.model.dblp;
 
 public class DblpPublication extends DblpEntity{
     private String title;
-    private String venue;
     private String volume;
     private String pages;
+    private Object venue;
     private String year;
     private String type;
     private String key;
@@ -18,14 +18,6 @@ public class DblpPublication extends DblpEntity{
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getVenue() {
-        return venue;
-    }
-
-    public void setVenue(String venue) {
-        this.venue = venue;
     }
 
     public String getVolume() {
@@ -96,5 +88,28 @@ public class DblpPublication extends DblpEntity{
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+
+    public void setVenue(Object venue) {
+        if(venue != null) {
+            this.venue = venue;
+        }
+    }
+
+    public String[] getVenue() {
+        if (venue == null) {
+            return null;
+        }
+
+        if (venue instanceof String) {
+            return new String[]{venue.toString()};
+        }
+
+        if (venue instanceof String[]) {
+            return (String[]) venue;
+        }
+
+        return null;
     }
 }

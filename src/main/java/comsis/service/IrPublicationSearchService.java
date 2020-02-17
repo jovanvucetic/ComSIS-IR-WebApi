@@ -2,7 +2,7 @@ package comsis.service;
 
 import comsis.core.model.Publication;
 import comsis.core.model.PublicationIndexModel;
-import comsis.core.serviceInterface.IndexService;
+import comsis.core.serviceInterface.PublicationIndexService;
 import comsis.core.serviceInterface.PublicationSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,52 +14,49 @@ import java.util.stream.Collectors;
 public class IrPublicationSearchService implements PublicationSearchService {
 
     @Autowired
-    private IndexService indexService;
+    private PublicationIndexService publicationIndexService;
+
+    @Override
+    public Publication getPublicationById(String id) {
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationsById(id, 1);
+        return publicationIndexModels.stream().findFirst().map(PublicationParser::parsePublication).get();
+    }
 
     @Override
     public List<Publication> getPublicationsByTitle(String query, int numberOfHits) {
-        List<PublicationIndexModel> publicationIndexModels = indexService.getPublicationsByTitle(query, numberOfHits);
-        return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationsByTitle(query, numberOfHits);
+        return publicationIndexModels.stream().map(PublicationParser::parsePublication).collect(Collectors.toList());
     }
 
     @Override
     public List<Publication> getPublicationsByAuthor(String query, int numberOfHits) {
-        List<PublicationIndexModel> publicationIndexModels = indexService.getPublicationsByAuthor(query, numberOfHits);
-        return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationsByAuthor(query, numberOfHits);
+        return publicationIndexModels.stream().map(PublicationParser::parsePublication).collect(Collectors.toList());
     }
 
     @Override
     public List<Publication> getPublicationsByAbstract(String query, int numberOfHits) {
-        List<PublicationIndexModel> publicationIndexModels = indexService.getPublicationsByAbstract(query, numberOfHits);
-        return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationsByAbstract(query, numberOfHits);
+        return publicationIndexModels.stream().map(PublicationParser::parsePublication).collect(Collectors.toList());
     }
 
     @Override
-    public List<Publication> getPublicationsByWords(String query, int numberOfHits) {
-        List<PublicationIndexModel> publicationIndexModels = indexService.getPublicationsByWords(query, numberOfHits);
-        return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
+    public List<Publication> getPublicationsByWordsInDocument(String query, int numberOfHits) {
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationsByWordsInDocument(query, numberOfHits);
+        return publicationIndexModels.stream().map(PublicationParser::parsePublication).collect(Collectors.toList());
     }
 
     @Override
     public List<Publication> getPublicationsByYear(int year, int numberOfHits) {
-        List<PublicationIndexModel> publicationIndexModels = indexService.getPublicationsByYear(year, numberOfHits);
-        return publicationIndexModels.stream().map(this::parsePublication).collect(Collectors.toList());
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationsByYear(year, numberOfHits);
+        return publicationIndexModels.stream().map(PublicationParser::parsePublication).collect(Collectors.toList());
     }
 
-    private Publication parsePublication(PublicationIndexModel model) {
-        if(model == null) {
-            return  null;
-        }
-
-        Publication publication = new Publication();
-
-        publication.setId(model.getId());
-        publication.setTitle(model.getTitle());
-        publication.setAuthors(model.getAuthors());
-        publication.setPublicationAbstract(model.getPublicationAbstract());
-        publication.setDownloadPath(model.getDocumentDownloadPath());
-        publication.setYear(Integer.parseInt(model.getYear()));
-
-        return publication;
+    @Override
+    public List<Publication> getPublicationByKeyWords(String query, int numberOfHits) {
+        List<PublicationIndexModel> publicationIndexModels = publicationIndexService.getPublicationByKeyWords(query, numberOfHits);
+        return publicationIndexModels.stream().map(PublicationParser::parsePublication).collect(Collectors.toList());
     }
+
+
 }

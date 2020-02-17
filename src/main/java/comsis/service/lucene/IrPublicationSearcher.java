@@ -9,12 +9,11 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.misc.HighFreqTerms;
+import org.apache.lucene.misc.TermStats;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -46,14 +45,30 @@ public class IrPublicationSearcher {
         }
     }
 
+    public List<PublicationIndexModel> findAll() {
+
+        List<PublicationIndexModel> publications = new ArrayList<>();
+        try {
+            Query query = new MatchAllDocsQuery();
+            TopDocs documents = searcher.search(query, Integer.MAX_VALUE);
+            ScoreDoc[] hits = documents.scoreDocs;
+            publications = Arrays.stream(hits).map(x -> extractPublicationFromScoreDoc(x)).collect(Collectors.toList());
+            indexReader.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return publications;
+    }
+
     public List<PublicationIndexModel> search(String field, String searchQuery, int numberOfHits){
         List<PublicationIndexModel> publications = new ArrayList<>();
         try {
             Query query = new QueryParser(field, queryAnalyzer).parse(searchQuery);
             TopDocs documents = searcher.search(query, numberOfHits);
             ScoreDoc[] hits = documents.scoreDocs;
-
-            publications = Arrays.stream(hits).map(x -> extractPublicationFromScoreDoc(x)).collect(Collectors.toList());
+           publications = Arrays.stream(hits).map(x -> extractPublicationFromScoreDoc(x)).collect(Collectors.toList());
             indexReader.close();
         }
         catch (IOException e) {
@@ -66,6 +81,16 @@ public class IrPublicationSearcher {
         return publications;
     }
 
+    public TermStats[] findMostFrequentWords(String field, int topCount) {
+        HighFreqTerms.TotalTermFreqComparator cmp = new HighFreqTerms.TotalTermFreqComparator();
+        try {
+            return HighFreqTerms.getHighFreqTerms(indexReader, topCount, field, cmp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new TermStats[0];
+        }
+    }
+
     private PublicationIndexModel extractPublicationFromScoreDoc(ScoreDoc scoreDoc) {
         try {
             Document document = searcher.doc(scoreDoc.doc);
@@ -75,9 +100,10 @@ public class IrPublicationSearcher {
             String year = document.get(Publication.YEAR_SEARCH_KEY);
             String downloadPath = document.get(Publication.DOWNLOAD_PATH_SEARCH_KEY);
             String paperAbstract = document.get(Publication.ABSTRACT_SEARCH_KEY);
+            String keyWords = document.get(Publication.KEY_WORDS_SEARCH_KEY);
             List<Author> authors = getAuthorsList(document);
 
-            return new PublicationIndexModel(id, title, paperAbstract, authors, year, downloadPath);
+            return new PublicationIndexModel(id, title, paperAbstract,keyWords, authors, year, downloadPath);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

@@ -41,7 +41,7 @@ public class IrPublicationService implements PublicationService {
     private PublicationMapper publicationMapper;
 
     @Autowired
-    private IndexService indexService;
+    private PublicationIndexService publicationIndexService;
 
     @Autowired
     private DblpSearchService dblpSearchService;
@@ -66,7 +66,6 @@ public class IrPublicationService implements PublicationService {
             DblpPublication dblpPublication = findDblpPublication(publicationData.getTitle());
             if(dblpPublication != null) {
                 publicationData.setYear(dblpPublication.getYear());
-                publicationData.setVenue(dblpPublication.getVenue());
             }
 
             createPublication(publicationData);
@@ -90,7 +89,7 @@ public class IrPublicationService implements PublicationService {
             publicationData.add(publication);
         }
 
-        indexService.indexPublications(publicationData);
+        publicationIndexService.indexPublications(publicationData);
     }
 
     @Override

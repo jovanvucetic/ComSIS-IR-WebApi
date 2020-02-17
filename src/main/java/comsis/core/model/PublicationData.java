@@ -11,16 +11,18 @@ public class PublicationData {
     private String venue;
     private int year;
     private List<Author> authors;
+    private String[] keyWords;
 
-    public PublicationData(String title, String publicationAbstract, List<Author> authors, String downloadPath) {
+    public PublicationData(String title, String publicationAbstract, String[] keyWords, List<Author> authors, String downloadPath) {
         this.title = title;
         this.publicationAbstract = publicationAbstract;
         this.authors = authors;
         this.downloadPath = downloadPath;
+        this.keyWords = keyWords;
     }
 
-    public PublicationData(UUID id, String title, String publicationAbstract, List<Author> authors, String downloadPath) {
-        this(title, publicationAbstract, authors, downloadPath);
+    public PublicationData(UUID id, String title, String publicationAbstract,String[] keyWords, List<Author> authors, String downloadPath) {
+        this(title, publicationAbstract,keyWords, authors, downloadPath);
         this.id = id;
     }
     public String getTitle() {
@@ -59,6 +61,14 @@ public class PublicationData {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public String[] getKeyWords() {
+        return keyWords;
+    }
+
+    public void setKeyWords(String[] keyWords) {
+        this.keyWords = keyWords;
     }
 
     public boolean validatePublication() {

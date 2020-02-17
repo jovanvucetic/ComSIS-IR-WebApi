@@ -74,6 +74,7 @@ public class IrPublicationIndexer {
         document.add(new TextField(Publication.ABSTRACT_SEARCH_KEY, publication.getPublicationAbstract(), Field.Store.YES));
         document.add(new TextField(Publication.YEAR_SEARCH_KEY, publication.getYear(), Field.Store.YES));
         document.add(new TextField(Publication.DOWNLOAD_PATH_SEARCH_KEY, publication.getDocumentDownloadPath(), Field.Store.YES));
+        document.add(new TextField(Publication.KEY_WORDS_SEARCH_KEY, publication.getKeyWords(), Field.Store.YES));
 
         String publicationContent = documentService.readDocumentContent(publication.getId());
         document.add(new TextField(Publication.PUBLICATION_CONTENT_SEARCH_KEY, publicationContent, Field.Store.YES));

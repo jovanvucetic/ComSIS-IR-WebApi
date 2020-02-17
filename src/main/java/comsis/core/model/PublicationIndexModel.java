@@ -10,6 +10,7 @@ public class PublicationIndexModel {
     private List<Author> authors;
     private String year;
     private String documentDownloadPath;
+    private String keyWords;
 
     public UUID getId() {
         return id;
@@ -35,6 +36,8 @@ public class PublicationIndexModel {
         return documentDownloadPath;
     }
 
+    public String getKeyWords() {return  keyWords;}
+
     public PublicationIndexModel(PublicationData publicationData) {
         this.id = publicationData.getId();
         this.title = publicationData.getTitle();
@@ -42,9 +45,10 @@ public class PublicationIndexModel {
         this.publicationAbstract = publicationData.getPublicationAbstract();
         this.year = ((Integer)publicationData.getYear()).toString();
         this.documentDownloadPath = publicationData.getDownloadPath();
+        this.keyWords = String.join(",", publicationData.getKeyWords());
     }
 
-    public PublicationIndexModel(UUID id, String title, String publicationAbstract,
+    public PublicationIndexModel(UUID id, String title, String publicationAbstract, String keyWords,
                                  List<Author> authors, String year, String downloadPath) {
         this.title = title;
         this.publicationAbstract = publicationAbstract;
@@ -52,5 +56,6 @@ public class PublicationIndexModel {
         this.documentDownloadPath = downloadPath;
         this.year = year;
         this.id = id;
+        this.keyWords = keyWords;
     }
 }

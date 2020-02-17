@@ -5,6 +5,7 @@ import comsis.core.model.Author;
 import comsis.core.model.PublicationData;
 import comsis.core.model.comsis.PublicationPage;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class PublicationPageDataParser {
@@ -17,7 +18,10 @@ public class PublicationPageDataParser {
 
         String downloadPath = downloadSiteUrl + publicationPage.getPublicationDownloadRelativePath();
 
+        String[] publicationKeyWords = Arrays.stream(publicationPage.getKeyWords().split("[,;]"))
+                .map(String::toLowerCase).map(String::trim).toArray(String[]::new);
+
         return new PublicationData(publicationPage.getPublicationTitle(),
-                publicationPage.getPublicationAbstract(), authors, downloadPath);
+                publicationPage.getPublicationAbstract(), publicationKeyWords, authors, downloadPath);
     }
 }

@@ -16,6 +16,7 @@ public class DocumentProcessor {
     private static final String ISSUE_SELECTOR = "a[href*=archive.php?show=vol]";
     private static final String PUBLICATION_AFFILIATIONS_SELECTOR = "ol";
     private static final String PUBLICATION_DOWNLOAD_LINK = "a.download";
+    private static final String PUBLICATION_KEYWORDS_SELECTOR = "h3:contains(Key words)";
 
     private SynchronizedQueue<WebPageData> urlQueue;
     private SynchronizedSet<String> visitedUrls;
@@ -68,9 +69,13 @@ public class DocumentProcessor {
         String affiliations = document.select(PUBLICATION_AFFILIATIONS_SELECTOR).html();
         String publicationAbstract = document.select(PUBLICATION_ABSTRACT_SELECTOR).next("p").text();
         String publicationRelativeDownloadPath = document.select(PUBLICATION_DOWNLOAD_LINK).attr("href");
+        String keyWords = document.select(PUBLICATION_KEYWORDS_SELECTOR).next("p").text();
+        if(keyWords == null || keyWords.isEmpty()) {
+            System.out.println("Null keywords: " + document.baseUri());
+        }
 
         PublicationPage publicationPage = new PublicationPage(publicationTitle, publicationAuthors,
-                affiliations, publicationAbstract, publicationRelativeDownloadPath, document.baseUri());
+                affiliations, publicationAbstract, keyWords, publicationRelativeDownloadPath, document.baseUri());
         loadedPublications.add(publicationPage);
     }
 

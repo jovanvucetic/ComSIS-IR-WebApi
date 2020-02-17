@@ -10,6 +10,7 @@ public class Publication {
     private String downloadPath;
     private String venue;
     private int year;
+    private String[] keyWords;
     private List<Author> authors;
 
     public UUID getId() {
@@ -66,5 +67,13 @@ public class Publication {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public String[] getKeyWords() {
+        return keyWords;
+    }
+
+    public void setKeyWords(String[] keyWords) {
+        this.keyWords = keyWords;
     }
 }

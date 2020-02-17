@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 @Service
 public class DblpWebSearchService implements DblpSearchService {
@@ -23,22 +24,38 @@ public class DblpWebSearchService implements DblpSearchService {
         DblpSearchPreferences searchPreferences = new DblpSearchPreferences(title, DblpSearchEntity.PUBLICATIONS,
                 NotationFormat.JSON, 10, 0, true);
 
+        DblpResponse<DblpPublication> response = getDblpResponse(searchPreferences);
+
+        if(response == null) {
+            return null;
+        }
+
+        return response.getFirstHitObject();
+    }
+
+    @Override
+    public List<DblpPublication> findPublicationsForAuthor(String authorsName) {
+        DblpSearchPreferences searchPreferences = new DblpSearchPreferences(authorsName, DblpSearchEntity.PUBLICATIONS,
+                NotationFormat.JSON, Integer.MAX_VALUE, 0, true);
+
+        DblpResponse<DblpPublication> response = getDblpResponse(searchPreferences);
+
+        if(response == null) {
+            return null;
+        }
+
+        return response.getHitObjectsList();
+    }
+
+    private DblpResponse<DblpPublication> getDblpResponse(DblpSearchPreferences searchPreferences){
         try {
             URL requestUrl = DblpRequestUrlBuilder.generateRequestUrl(searchPreferences);
             String jsonResponse = HttpClient.get(requestUrl);
             Gson gson = new GsonBuilder().create();
-            DblpResponse<DblpPublication> response = gson.fromJson(jsonResponse, (new TypeToken<DblpResponse<DblpPublication>>(){}).getType());
-
-            if(response == null) {
-                return null;
-            }
-
-            return response.getFirstHitObject();
+            return gson.fromJson(jsonResponse, (new TypeToken<DblpResponse<DblpPublication>>(){}).getType());
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
-
-
 }
